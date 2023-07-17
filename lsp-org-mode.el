@@ -24,9 +24,25 @@
 
 ;;; Code:
 
+(defun lsp-org-mode--jsonrpc (request)
+  "Parse and execute jsonrpc REQUEST."
+  (let ((args (json-parse-string request :object-type 'plist)))
+    (message "lsp-org-mode: %s" args)))
+
 (defun lsp-org-mode--cli ()
   "Entrypoint of lsp-org-mode binary."
-  (message "lsp-org-mode--cli"))
+  (message "lsp-org-mode--cli")
+  (let (inpt)
+    (while (setq inpt (ignore-errors (read-string "")))
+      (message inpt)
+      (cond
+       ((string-empty-p inpt))
+       ((string-prefix-p "Content-Length" inpt))
+       (t
+        (condition-case err
+            (lsp-org-mode--jsonrpc inpt)
+          (error (message "lsp-org-mode--request error: %s" err)))))))
+  (message "lsp-org-mode--cli end"))
 
 (provide 'lsp-org-mode)
 ;;; lsp-org-mode.el ends here
