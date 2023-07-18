@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'lsp-org-mode-var)
 
 (defun lsp-org-mode-method--initialize (params)
@@ -40,7 +41,7 @@
   (setq lsp-org-mode-var--workspace-folders (plist-get params :workspaceFolders))
   `( :result
      ( :capabilities
-       ( :textDocumentSync 2  ; Incremental
+       ( :textDocumentSync 2            ; Incremental
          :completionProvider
          ( :resolveProvider t)))))
 
@@ -53,11 +54,49 @@
   (setq lsp-org-mode-var--trace (plist-get params :value))
   nil)
 
+(defun lsp-org-mode-method--textDocument/didOpen (params)
+  "Method `textDocument/didOpen` with PARAMS."
+  (add-to-list 'lsp-org-mode-var--documents (plist-get params :textDocument))
+  nil)
+
+(defun lsp-org-mode-method--textDocument/didChange (params)
+  "Method `textDocument/didChange` with PARAMS."
+  (let ((_document (plist-get params :textDocument))
+        (_content-changes (plist-get params :contentChanges)))
+    nil)                                ; TODO
+  nil)
+
+(defun lsp-org-mode-method--textDocument/willSave (_params)
+  "Method `textDocument/willSave` with PARAMS."
+  nil)
+
+(defun lsp-org-mode-method--textDocument/willSaveWaitUntil (_params)
+  "Method `textDocument/willSaveWaitUntil` with PARAMS."
+  nil)
+
+(defun lsp-org-mode-method--textDocument/didSave (_params)
+  "Method `textDocument/didSave` with PARAMS."
+  nil)
+
+(defun lsp-org-mode-method--textDocument/didClose (params)
+  "Method `textDocument/didClose` with PARAMS."
+  (let ((uri (plist-get params :uri)))
+    (cl-delete-if
+     (lambda (elm) (string= uri (plist-get elm :uri)))
+     lsp-org-mode-var--documents))
+  nil)
+
 (defvar lsp-org-mode-method--plist
   (list
    "initialize" 'lsp-org-mode-method--initialize
    "initialized" 'lsp-org-mode-method--initialized
-   "$/setTrace" 'lsp-org-mode-method--$/setTrace))
+   "$/setTrace" 'lsp-org-mode-method--$/setTrace
+   "textDocument/didOpen" 'lsp-org-mode-method--textDocument/didOpen
+   "textDocument/didChange" 'lsp-org-mode-method--textDocument/didChange
+   "textDocument/willSave" 'lsp-org-mode-method--textDocument/willSave
+   "textDocument/willSaveWaitUntil" 'lsp-org-mode-method--textDocument/willSaveWaitUntil
+   "textDocument/didSave" 'lsp-org-mode-method--textDocument/didSave
+   "textDocument/didClose" 'lsp-org-mode-method--textDocument/didClose))
 
 (provide 'lsp-org-mode-method)
 ;;; lsp-org-mode-method.el ends here

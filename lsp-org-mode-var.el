@@ -33,6 +33,7 @@
 (defvar lsp-org-mode-var--capabilities nil)
 (defvar lsp-org-mode-var--trace nil)
 (defvar lsp-org-mode-var--workspace-folders nil)
+(defvar lsp-org-mode-var--documents nil)
 
 (provide 'lsp-org-mode-var)
 ;;; lsp-org-mode-var.el ends here
