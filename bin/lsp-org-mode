@@ -30,7 +30,9 @@ for line in sys.stdin:
         print(buf, flush=True)
 ' |
 emacs --batch --eval '
-(let (inpt)
-  (while (setq inpt (ignore-errors (read-string "")))
-    (message inpt)))
+(progn
+  (setq debug-on-error t)
+  (add-to-list (quote load-path) ''"'"$(cd $(dirname $(readlink -f $0))/../; pwd)"'"'')
+  (require (quote lsp-org-mode))
+  (lsp-org-mode--cli))
 '
