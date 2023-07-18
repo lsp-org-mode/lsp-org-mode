@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(defvar lsp-org-mode-var--buffers-plist nil)
+
 (defvar lsp-org-mode-var--process-id nil)
 (defvar lsp-org-mode-var--client-info nil)
 (defvar lsp-org-mode-var--locale nil)
@@ -33,7 +35,6 @@
 (defvar lsp-org-mode-var--capabilities nil)
 (defvar lsp-org-mode-var--trace nil)
 (defvar lsp-org-mode-var--workspace-folders nil)
-(defvar lsp-org-mode-var--documents nil)
 
 (provide 'lsp-org-mode-var)
 ;;; lsp-org-mode-var.el ends here

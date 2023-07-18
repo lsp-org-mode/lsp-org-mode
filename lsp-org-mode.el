@@ -25,28 +25,31 @@
 ;;; Code:
 
 (require 'json)
+(require 'lsp-org-mode-json)
 (require 'lsp-org-mode-method)
 
 (defun lsp-org-mode--jsonrpc (request)
   "Parse and execute jsonrpc REQUEST."
-  (let* ((args (json-parse-string request :object-type 'plist))
-         (id (plist-get args :id))
-         (method (plist-get args :method))
-         (params (plist-get args :params))
-         fn res)
-    (message "===")
-    (message "method: %s, params: %s" method params)
-    (setq fn (plist-get lsp-org-mode-method--plist method 'equal))
-    (unless fn
-      (error "No such method: %s" method))
-    (setq res (funcall fn params))
-    (let ((result (plist-get res :result))
-          (error (plist-get res :error)))
-      (message "result: %s" result)
-      (when res
-        (if error
-            `(:jsonrpc "2.0" :id ,id :error ,error)
-          `(:jsonrpc "2.0" :id ,id :result ,result))))))
+  (let ((json-object-type 'plist)
+        (json-array-type 'list))
+    (let* ((args (json-read-from-string request))
+           (id (plist-get args :id))
+           (method (plist-get args :method))
+           (params (plist-get args :params))
+           fn res)
+      (message "===")
+      (message "method: %s, params: %S" method params)
+      (setq fn (plist-get lsp-org-mode-method--plist method 'equal))
+      (unless fn
+        (error "No such method: %s" method))
+      (setq res (funcall fn params))
+      (let ((result (plist-get res :result))
+            (error (plist-get res :error)))
+        (message "result: %s" result)
+        (when res
+          (if error
+              `(:jsonrpc "2.0" :id ,id :error ,error)
+            `(:jsonrpc "2.0" :id ,id :result ,result)))))))
 
 (defun lsp-org-mode--cli ()
   "Entrypoint of lsp-org-mode binary."
@@ -56,13 +59,11 @@
       (cond
        ((string-empty-p inpt))
        (t
-        (condition-case err
-            (let* ((res (lsp-org-mode--jsonrpc inpt))
-                   (res-str (json-encode res)))
-              (when res
-                (message "response: %s" res-str)
-                (princ (format "Content-Length: %d\r\n\r\n%s" (length res-str) res-str))))
-          (error (message "lsp-org-mode--request error: %s" err)))))))
+        (let* ((res (lsp-org-mode--jsonrpc inpt))
+               (res-str (lsp-org-mode-json-encode res)))
+          (when res
+            (message "response: %s" res-str)
+            (princ (format "Content-Length: %d\r\n\r\n%s" (length res-str) res-str))))))))
   (message "lsp-org-mode--cli: end"))
 
 (provide 'lsp-org-mode)
