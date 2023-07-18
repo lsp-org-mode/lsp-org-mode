@@ -24,10 +24,28 @@
 
 ;;; Code:
 
+(require 'json)
+(require 'lsp-org-mode-method)
+
 (defun lsp-org-mode--jsonrpc (request)
   "Parse and execute jsonrpc REQUEST."
-  (let ((args (json-parse-string request :object-type 'plist)))
-    (message "lsp-org-mode: %s" args)))
+  (let* ((args (json-parse-string request :object-type 'plist))
+         (id (plist-get args :id))
+         (method (plist-get args :method))
+         (params (plist-get args :params))
+         fn res)
+    (message "===")
+    (message "method: %s, params: %s" method params)
+    (setq fn (plist-get lsp-org-mode-method--plist method 'equal))
+    (unless fn
+      (error "No such method: %s" method))
+    (setq res (funcall fn params))
+    (let ((result (plist-get res :result))
+          (error (plist-get res :error)))
+      (message "result: %s" result)
+      (if error
+          `(:jsonrpc "2.0" :id ,id :error ,error)
+        `(:jsonrpc "2.0" :id ,id :result ,result)))))
 
 (defun lsp-org-mode--cli ()
   "Entrypoint of lsp-org-mode binary."
@@ -38,7 +56,8 @@
        ((string-empty-p inpt))
        (t
         (condition-case err
-            (lsp-org-mode--jsonrpc inpt)
+            (let ((res (json-encode (lsp-org-mode--jsonrpc inpt))))
+              (princ (format "Content-Length: %d\r\n\r\n%s" (length res) res)))
           (error (message "lsp-org-mode--request error: %s" err)))))))
   (message "lsp-org-mode--cli: end"))
 
