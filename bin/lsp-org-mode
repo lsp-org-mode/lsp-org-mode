@@ -1,28 +1,36 @@
-:;exec ${EMACS:-emacs} --batch -l "$0" -- "$@"
+#!/bin/bash
 
-;; Copyright (C) 2023  Naoya Yamashita
+## Copyright (C) 2023  Naoya Yamashita
 
-;; Author: Naoya Yamashita <conao3@gmail.com>
-;; URL: https://github.com/lsp-org-mode/lsp-org-mode
+## Author: Naoya Yamashita <conao3@gmail.com>
+## URL: https://github.com/lsp-org-mode/lsp-org-mode
 
-;; This program is free software: you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
 
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
 
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(setq debug-on-error t)
-(when (string= "--" (car command-line-args-left))
-  (pop command-line-args-left))
+set -euo pipefail -o posix
 
-(add-to-list 'load-path (expand-file-name "../" (file-name-directory load-file-name)))
-(require 'lsp-org-mode)
-
-(lsp-org-mode--cli)
+cat - |
+python -c '
+import sys
+for line in sys.stdin:
+    if line.startswith("Content-Length"):
+        _ = sys.stdin.readline()  # skip empty line
+        buf = sys.stdin.read(int(line.split(":")[1].strip()))
+        print(buf, flush=True)
+' |
+emacs --batch --eval '
+(let (inpt)
+  (while (setq inpt (ignore-errors (read-string "")))
+    (message inpt)))
+'
