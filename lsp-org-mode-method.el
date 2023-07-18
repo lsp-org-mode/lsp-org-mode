@@ -86,6 +86,16 @@
      lsp-org-mode-var--documents))
   nil)
 
+(defun lsp-org-mode-method--textDocument/completion (_params)
+  "Method `textDocument/completion` with PARAMS."
+  `( :result
+     ( :isIncomplete :json-false
+       :items
+       [( :label "test1"
+          :kind 1)
+        ( :label "test2"
+          :kind 1)])))
+
 (defvar lsp-org-mode-method--plist
   (list
    "initialize" 'lsp-org-mode-method--initialize
@@ -96,7 +106,8 @@
    "textDocument/willSave" 'lsp-org-mode-method--textDocument/willSave
    "textDocument/willSaveWaitUntil" 'lsp-org-mode-method--textDocument/willSaveWaitUntil
    "textDocument/didSave" 'lsp-org-mode-method--textDocument/didSave
-   "textDocument/didClose" 'lsp-org-mode-method--textDocument/didClose))
+   "textDocument/didClose" 'lsp-org-mode-method--textDocument/didClose
+   "textDocument/completion" 'lsp-org-mode-method--textDocument/completion))
 
 (provide 'lsp-org-mode-method)
 ;;; lsp-org-mode-method.el ends here

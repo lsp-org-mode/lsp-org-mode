@@ -57,9 +57,11 @@
        ((string-empty-p inpt))
        (t
         (condition-case err
-            (let ((res (json-encode (lsp-org-mode--jsonrpc inpt))))
+            (let* ((res (lsp-org-mode--jsonrpc inpt))
+                   (res-str (json-encode res)))
               (when res
-                (princ (format "Content-Length: %d\r\n\r\n%s" (length res) res))))
+                (message "response: %s" res-str)
+                (princ (format "Content-Length: %d\r\n\r\n%s" (length res-str) res-str))))
           (error (message "lsp-org-mode--request error: %s" err)))))))
   (message "lsp-org-mode--cli: end"))
 
