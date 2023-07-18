@@ -43,9 +43,10 @@
     (let ((result (plist-get res :result))
           (error (plist-get res :error)))
       (message "result: %s" result)
-      (if error
-          `(:jsonrpc "2.0" :id ,id :error ,error)
-        `(:jsonrpc "2.0" :id ,id :result ,result)))))
+      (when res
+        (if error
+            `(:jsonrpc "2.0" :id ,id :error ,error)
+          `(:jsonrpc "2.0" :id ,id :result ,result))))))
 
 (defun lsp-org-mode--cli ()
   "Entrypoint of lsp-org-mode binary."
@@ -57,7 +58,8 @@
        (t
         (condition-case err
             (let ((res (json-encode (lsp-org-mode--jsonrpc inpt))))
-              (princ (format "Content-Length: %d\r\n\r\n%s" (length res) res)))
+              (when res
+                (princ (format "Content-Length: %d\r\n\r\n%s" (length res) res))))
           (error (message "lsp-org-mode--request error: %s" err)))))))
   (message "lsp-org-mode--cli: end"))
 

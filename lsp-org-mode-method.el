@@ -44,9 +44,20 @@
          :completionProvider
          ( :resolveProvider t)))))
 
+(defun lsp-org-mode-method--initialized (_params)
+  "Method `initialized` with PARAMS."
+  nil)
+
+(defun lsp-org-mode-method--$/setTrace (params)
+  "Method `$/setTrace` with PARAMS."
+  (setq lsp-org-mode-var--trace (plist-get params :value))
+  nil)
+
 (defvar lsp-org-mode-method--plist
   (list
-   "initialize" 'lsp-org-mode-method--initialize))
+   "initialize" 'lsp-org-mode-method--initialize
+   "initialized" 'lsp-org-mode-method--initialized
+   "$/setTrace" 'lsp-org-mode-method--$/setTrace))
 
 (provide 'lsp-org-mode-method)
 ;;; lsp-org-mode-method.el ends here
