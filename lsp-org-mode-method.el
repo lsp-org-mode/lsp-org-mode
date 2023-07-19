@@ -106,7 +106,7 @@
 (defun lsp-org-mode-method--textDocument/didClose (params)
   "Method `textDocument/didClose` with PARAMS."
   (let ((uri (plist-get params :uri)))
-    (setf (plist-get 'lsp-org-mode-var--buffers-plist uri 'string=) nil))
+    (setf (plist-get lsp-org-mode-var--buffers-plist uri 'string=) nil))
   nil)
 
 (defun lsp-org-mode-method--textDocument/completion (_params)
