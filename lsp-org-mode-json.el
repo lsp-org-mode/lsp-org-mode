@@ -29,15 +29,10 @@
 (defun lsp-org-mode-json-encode--atom (obj)
   "Encode atom OBJ as JSON."
   (cond
-   ((eq obj t) "true")
    ((eq obj :json-false) "false")
-   ((eq obj nil) "null")
    ((eq obj :json-empty-array) "[]")
    ((eq obj :json-empty-object) "{}")
-   ((keywordp obj) (json-encode obj))
-   ((numberp obj) (json-encode obj))
-   ((stringp obj) (json-encode-string obj))
-   (t (error "Cannot encode %s as JSON" obj))))
+   (t (json-encode obj))))
 
 (defun lsp-org-mode-json-encode--list (obj)
   "Encode list OBJ as JSON."
