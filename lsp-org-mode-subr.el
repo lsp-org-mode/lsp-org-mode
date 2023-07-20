@@ -27,7 +27,6 @@
 
 ;;; Code:
 
-(require 'jit-lock)
 (require 'cl-lib)
 (require 'lsp-org-mode-var)
 
@@ -50,18 +49,12 @@
   ;; actually fontify the buffer.  If font-lock is not in use, we
   ;; don't care because, except in htmlize-file, we don't force
   ;; font-lock on the user.
-  (when t ; font-lock-mode
-    ;; In part taken from ps-print-ensure-fontified in GNU Emacs 21.
-    (when (and (boundp 'jit-lock-mode)
-               (symbol-value 'jit-lock-mode))
-      (jit-lock-fontify-now (point-min) (point-max)))
-
-    (if (fboundp 'font-lock-ensure)
-        (font-lock-ensure)
-      ;; Emacs prior to 25.1
-      (with-no-warnings
-        (font-lock-mode 1)
-        (font-lock-fontify-buffer)))))
+  (if (fboundp 'font-lock-ensure)
+      (font-lock-ensure)
+    ;; Emacs prior to 25.1
+    (with-no-warnings
+      (font-lock-mode 1)
+      (font-lock-fontify-buffer))))
 
 (defun lsp-org-mode-subr--overlay-faces-at (pos)
   "Forked `htmlize-overlay-faces-at' POS."
