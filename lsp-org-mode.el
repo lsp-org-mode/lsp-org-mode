@@ -45,7 +45,7 @@
       (setq res (funcall fn params))
       (let ((result (plist-get res :result))
             (error (plist-get res :error)))
-        (message "result: %s" result)
+        (message "result: %s" res)
         (when res
           (if error
               `(:jsonrpc "2.0" :id ,id :error ,error)

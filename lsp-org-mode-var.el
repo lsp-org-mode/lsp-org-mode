@@ -25,6 +25,7 @@
 ;;; Code:
 
 (defvar lsp-org-mode-var--buffers-plist nil)
+(defvar lsp-org-mode-var--semantic-tokens nil)
 
 (defvar lsp-org-mode-var--process-id nil)
 (defvar lsp-org-mode-var--client-info nil)

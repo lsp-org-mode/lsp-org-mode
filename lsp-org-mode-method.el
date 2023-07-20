@@ -26,6 +26,7 @@
 
 (require 'cl-lib)
 (require 'lsp-org-mode-var)
+(require 'lsp-org-mode-subr)
 
 (defun lsp-org-mode-method--initialize (params)
   "Method `initialize` with PARAMS."
@@ -38,11 +39,22 @@
   (setq lsp-org-mode-var--capabilities (plist-get params :capabilities))
   (setq lsp-org-mode-var--trace (plist-get params :trace))
   (setq lsp-org-mode-var--workspace-folders (plist-get params :workspaceFolders))
+
+  (setq lsp-org-mode-var--semantic-tokens
+        (lsp-org-mode-subr--plist-get params
+          (:capabilities :textDocument :semanticTokens :tokenTypes)))
+
   `( :result
      ( :capabilities
        ( :textDocumentSync 2            ; Incremental
          :completionProvider
-         ( :resolveProvider t)))))
+         ( :resolveProvider t)
+         :semanticTokensProvider
+         ( :legend
+           ( :tokenTypes ,lsp-org-mode-var--semantic-tokens
+             :tokenModifiers :json-empty-array)
+           :range :json-false
+           :full t)))))
 
 (defun lsp-org-mode-method--initialized (_params)
   "Method `initialized` with PARAMS."
@@ -60,6 +72,7 @@
          (text (plist-get text-document :text))
          (buf (generate-new-buffer (format "*lsp-org-mode* - %s" uri))))
     (with-current-buffer buf
+      (org-mode)
       (insert text))
     (setf (plist-get lsp-org-mode-var--buffers-plist uri 'string=) buf))
   nil)
@@ -109,6 +122,21 @@
     (setf (plist-get lsp-org-mode-var--buffers-plist uri 'string=) nil))
   nil)
 
+(defun lsp-org-mode-method--textDocument/semanticTokens/full (params)
+  "Method `textDocument/semanticTokens/full` with PARAMS."
+  (let* ((uri (lsp-org-mode-subr--plist-get params (:textDocument :uri)))
+         (buf (plist-get lsp-org-mode-var--buffers-plist uri 'string=))
+         (tokens (with-current-buffer buf
+                   (lsp-org-mode-subr--ensure-fontified)
+                   (lsp-org-mode-subr--encode-tokens
+                    (lsp-org-mode-subr--buffer-tokens)))))
+    `( :result
+       ( :data
+         ,(mapcan
+           (lambda (elm)
+             (list (nth 1 elm) (nth 2 elm) (nth 3 elm) 0 0))
+           tokens)))))
+
 (defun lsp-org-mode-method--textDocument/completion (_params)
   "Method `textDocument/completion` with PARAMS."
   `( :result
@@ -135,6 +163,7 @@
    "textDocument/didClose" 'lsp-org-mode-method--textDocument/didClose
 
    ;; Language Features
+   "textDocument/semanticTokens/full" 'lsp-org-mode-method--textDocument/semanticTokens/full
    "textDocument/completion" 'lsp-org-mode-method--textDocument/completion))
 
 (provide 'lsp-org-mode-method)
