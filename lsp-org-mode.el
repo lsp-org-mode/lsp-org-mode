@@ -39,8 +39,7 @@
            fn res)
       (message "===")
       (message "method: %s, params: %S" method params)
-      (setq fn (symbol-function (intern (concat "lsp-org-mode--" method))))
-      (setq fn (plist-get lsp-org-mode-method--plist method 'equal))
+      (setq fn (symbol-function (intern (concat "lsp-org-mode-method--" method))))
       (unless fn
         (error "No such method: %s" method))
       (setq res (funcall fn params))

@@ -143,25 +143,5 @@
   `( :result
      ,params))
 
-(defvar lsp-org-mode-method--plist
-  (list
-   ;; Lifecycle Messages
-   "initialize" 'lsp-org-mode-method--initialize
-   "initialized" 'lsp-org-mode-method--initialized
-   "$/setTrace" 'lsp-org-mode-method--$/setTrace
-
-   ;; Document Synchronization
-   "textDocument/didOpen" 'lsp-org-mode-method--textDocument/didOpen
-   "textDocument/didChange" 'lsp-org-mode-method--textDocument/didChange
-   "textDocument/willSave" 'lsp-org-mode-method--textDocument/willSave
-   "textDocument/willSaveWaitUntil" 'lsp-org-mode-method--textDocument/willSaveWaitUntil
-   "textDocument/didSave" 'lsp-org-mode-method--textDocument/didSave
-   "textDocument/didClose" 'lsp-org-mode-method--textDocument/didClose
-
-   ;; Language Features
-   "textDocument/semanticTokens/full" 'lsp-org-mode-method--textDocument/semanticTokens/full
-   "textDocument/completion" 'lsp-org-mode-method--textDocument/completion
-   "completionItem/resolve" 'lsp-org-mode-method--completionItem/resolve))
-
 (provide 'lsp-org-mode-method)
 ;;; lsp-org-mode-method.el ends here
