@@ -194,5 +194,25 @@
     (pop res)                            ; remove last garbage element
     (nreverse res)))
 
+(defun lsp-org-mode-subr--move-line-col (line col)
+  "Move to LINE and COL."
+  (goto-char (point-min))
+  (forward-line line)
+  (forward-char col))
+
+(defun lsp-org-mode-subr--point-to-line-col (pnt)
+  "Get line and col from PNT."
+  (save-excursion
+    (goto-char pnt)
+    (list (- (line-number-at-pos) 1)
+          (current-column))))
+
+(defun lsp-org-mode-subr--encode-range (start end)
+  "Encode START and END."
+  (let ((e-start (lsp-org-mode-subr--point-to-line-col start))
+        (e-end (lsp-org-mode-subr--point-to-line-col end)))
+    `( :start (:line ,(nth 0 e-start) :character ,(nth 1 e-start))
+       :end (:line ,(nth 0 e-end) :character ,(nth 1 e-end)))))
+
 (provide 'lsp-org-mode-subr)
 ;;; lsp-org-mode-subr.el ends here

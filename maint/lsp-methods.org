@@ -60,8 +60,8 @@
   - [ ] workspace/diagnostic.
   - [ ] workspace/diagnostic/refresh
   - [ ] textDocument/signatureHelp
-  - [ ] textDocument/codeAction
-  - [ ] codeAction/resolve
+  - [X] textDocument/codeAction
+  - [X] codeAction/resolve
   - [ ] textDocument/documentColor
   - [ ] textDocument/colorPresentation
   - [ ] textDocument/formatting

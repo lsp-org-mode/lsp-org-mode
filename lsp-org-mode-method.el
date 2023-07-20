@@ -25,6 +25,8 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'org)
+(require 'org-element)
 (require 'lsp-org-mode-var)
 (require 'lsp-org-mode-subr)
 
@@ -40,6 +42,8 @@
      ( :capabilities
        ( :textDocumentSync 2            ; Incremental
          :completionProvider :json-empty-object
+         :codeActionProvider
+         ( :resolveProvider t)
          :foldingRangeProvider t
          :semanticTokensProvider
          ( :legend
@@ -100,6 +104,7 @@
             (delete-char range-length)
             (insert text)))))
     (message
+     "%s"
      (with-current-buffer buf
        (buffer-substring-no-properties (point-min) (point-max)))))
   nil)
@@ -162,6 +167,56 @@
   "Method `completionItem/resolve` with PARAMS."
   `( :result
      ,params))
+
+(defun lsp-org-mode-method--textDocument/codeAction (params)
+  "Method `textDocument/codeAction` with PARAMS."
+  (let* ((uri (lsp-org-mode-subr--plist-get params (:textDocument :uri)))
+         (buf (plist-get lsp-org-mode-var--buffers-plist uri 'string=))
+         (line (lsp-org-mode-subr--plist-get params (:range :start :line)))
+         (col (lsp-org-mode-subr--plist-get params (:range :start :character)))
+         (context (with-current-buffer buf
+                    (save-excursion
+                      (lsp-org-mode-subr--move-line-col line col)
+                      (org-element-lineage (org-element-context) '(table)))))
+         (type (org-element-type context))
+         (data `( :textDocument (:uri ,uri)
+                  :range (:start (:line ,line :character ,col))))
+         res)
+    (pcase type
+      (`table
+       (push `( :title "Align table" :data ,data) res)))
+    `( :result ,res)))
+
+(defun lsp-org-mode-method--codeAction/resolve (params)
+  "Method `codeAction/resolve` with PARAMS."
+  (let* ((uri (lsp-org-mode-subr--plist-get params (:data :textDocument :uri)))
+         (buf (plist-get lsp-org-mode-var--buffers-plist uri 'string=))
+         (line (lsp-org-mode-subr--plist-get params (:data :range :start :line)))
+         (col (lsp-org-mode-subr--plist-get params (:data :range :start :character)))
+         (title (lsp-org-mode-subr--plist-get params (:title)))
+         edit)
+    (pcase title
+      ("Align table"
+       (let (before-range before-encode-range before-text after-text)
+         (with-current-buffer buf
+           (save-excursion
+             (lsp-org-mode-subr--move-line-col line col)
+             (setq before-range (list (org-table-begin) (org-table-end)))
+             (setq before-encode-range (apply 'lsp-org-mode-subr--encode-range before-range))
+             (setq before-text (buffer-substring-no-properties (nth 0 before-range) (nth 1 before-range)))
+             (org-table-align)
+             (setq after-text (buffer-substring-no-properties (org-table-begin) (org-table-end)))
+
+             ;; Realy???  Why should I restore buffer?
+             (delete-region (org-table-begin) (org-table-end))
+             (insert before-text)))
+         (setq edit
+               `( :changes
+                  (,(intern (concat ":" uri))
+                   (( :range ,before-encode-range
+                      :newText ,after-text))))))))
+    `( :result
+       ( :title ,title :edit ,edit))))
 
 (provide 'lsp-org-mode-method)
 ;;; lsp-org-mode-method.el ends here
