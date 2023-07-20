@@ -40,7 +40,7 @@
   - [ ] textDocument/codeLens
   - [ ] codeLens/resolve
   - [ ] workspace/codeLens/refresh
-  - [ ] textDocument/foldingRange
+  - [X] textDocument/foldingRange
   - [ ] textDocument/selectionRange
   - [ ] textDocument/documentSymbol
   - [X] textDocument/semanticTokens/full

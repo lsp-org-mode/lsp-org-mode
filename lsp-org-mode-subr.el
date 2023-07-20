@@ -27,6 +27,7 @@
 
 ;;; Code:
 
+(require 'org)
 (require 'cl-lib)
 (require 'lsp-org-mode-var)
 
@@ -172,6 +173,25 @@
              (nth 3 cur))
             res)
       (setq prev cur))
+    (nreverse res)))
+
+(defun lsp-org-mode-subr--buffer-tree-range (&optional buf)
+  "Get tree range from BUF."
+  (let (res)
+    (with-current-buffer (or buf (current-buffer))
+      (save-excursion
+        (goto-char (point-min))
+        (while (not (eobp))
+          (org-next-visible-heading 1)
+          (push (list
+                 (org-current-level)
+                 (- (line-number-at-pos) 1)
+                 (save-excursion         ; see `org-cycle-internal-local'
+		           (org-end-of-subtree t t)
+		           (unless (eobp) (forward-char -1))
+		           (- (line-number-at-pos) 1)))
+                res))))
+    (pop res)                            ; remove last garbage element
     (nreverse res)))
 
 (provide 'lsp-org-mode-subr)

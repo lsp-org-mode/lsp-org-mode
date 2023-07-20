@@ -40,6 +40,7 @@
      ( :capabilities
        ( :textDocumentSync 2            ; Incremental
          :completionProvider :json-empty-object
+         :foldingRangeProvider t
          :semanticTokensProvider
          ( :legend
            ( :tokenTypes ,lsp-org-mode-var--semantic-tokens)
@@ -120,6 +121,17 @@
   (let ((uri (plist-get params :uri)))
     (setf (plist-get lsp-org-mode-var--buffers-plist uri 'string=) nil))
   nil)
+
+(defun lsp-org-mode-method--textDocument/foldingRange (params)
+  "Method `textDocument/foldingRange` with PARAMS."
+  (let* ((uri (lsp-org-mode-subr--plist-get params (:textDocument :uri)))
+         (buf (plist-get lsp-org-mode-var--buffers-plist uri 'string=))
+         (trees (lsp-org-mode-subr--buffer-tree-range buf)))
+    `( :result
+       ,(mapcar
+         (lambda (elm)
+           `( :startLine ,(nth 1 elm) :endLine ,(nth 2 elm)))
+         trees))))
 
 (defun lsp-org-mode-method--textDocument/semanticTokens/full (params)
   "Method `textDocument/semanticTokens/full` with PARAMS."
