@@ -56,6 +56,15 @@
   (setf (plist-get lsp-org-mode-var--initialize-params :tarce) (plist-get params :value))
   nil)
 
+(defun lsp-org-mode-method--shutdown (_params)
+  "Method `shutdown` with PARAMS."
+  `( :result nil))
+
+(defun lsp-org-mode-method--exit (_params)
+  "Method `exit` with PARAMS."
+  (kill-emacs)
+  nil)
+
 (defun lsp-org-mode-method--textDocument/didOpen (params)
   "Method `textDocument/didOpen` with PARAMS."
   (let* ((text-document (plist-get params :textDocument))

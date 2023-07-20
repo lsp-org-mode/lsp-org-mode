@@ -8,8 +8,8 @@
   - [ ] client/unregisterCapability
   - [X] $/setTrace
   - [ ] $/logTrace
-  - [ ] shutdown
-  - [ ] exit
+  - [X] shutdown
+  - [X] exit
 - Document Synchronization
   - [X] textDocument/didOpen
   - [X] textDocument/didChange
