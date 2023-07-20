@@ -39,8 +39,7 @@
   `( :result
      ( :capabilities
        ( :textDocumentSync 2            ; Incremental
-         :completionProvider
-         ( :resolveProvider t)
+         :completionProvider :json-empty-object
          :semanticTokensProvider
          ( :legend
            ( :tokenTypes ,lsp-org-mode-var--semantic-tokens)
