@@ -51,8 +51,7 @@
          ( :resolveProvider t)
          :semanticTokensProvider
          ( :legend
-           ( :tokenTypes ,lsp-org-mode-var--semantic-tokens
-             :tokenModifiers :json-empty-array)
+           ( :tokenTypes ,lsp-org-mode-var--semantic-tokens)
            :range :json-false
            :full t)))))
 
