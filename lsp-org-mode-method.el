@@ -30,15 +30,7 @@
 
 (defun lsp-org-mode-method--initialize (params)
   "Method `initialize` with PARAMS."
-  (setq lsp-org-mode-var--process-id (plist-get params :processId))
-  (setq lsp-org-mode-var--client-info (plist-get params :clientInfo))
-  (setq lsp-org-mode-var--locale (plist-get params :locale))
-  (setq lsp-org-mode-var--root-path (plist-get params :rootPath))
-  (setq lsp-org-mode-var--root-uri (plist-get params :rootUri))
-  (setq lsp-org-mode-var--initialization-options (plist-get params :initializationOptions))
-  (setq lsp-org-mode-var--capabilities (plist-get params :capabilities))
-  (setq lsp-org-mode-var--trace (plist-get params :trace))
-  (setq lsp-org-mode-var--workspace-folders (plist-get params :workspaceFolders))
+  (setq lsp-org-mode-var--initialize-params params)
 
   (setq lsp-org-mode-var--semantic-tokens
         (lsp-org-mode-subr--plist-get params
@@ -61,7 +53,7 @@
 
 (defun lsp-org-mode-method--$/setTrace (params)
   "Method `$/setTrace` with PARAMS."
-  (setq lsp-org-mode-var--trace (plist-get params :value))
+  (setf (plist-get lsp-org-mode-var--initialize-params :tarce) (plist-get params :value))
   nil)
 
 (defun lsp-org-mode-method--textDocument/didOpen (params)

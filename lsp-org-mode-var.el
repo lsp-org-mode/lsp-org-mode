@@ -24,18 +24,10 @@
 
 ;;; Code:
 
+(defvar lsp-org-mode-var--initialize-params nil)
+
 (defvar lsp-org-mode-var--buffers-plist nil)
 (defvar lsp-org-mode-var--semantic-tokens nil)
-
-(defvar lsp-org-mode-var--process-id nil)
-(defvar lsp-org-mode-var--client-info nil)
-(defvar lsp-org-mode-var--locale nil)
-(defvar lsp-org-mode-var--root-path nil)
-(defvar lsp-org-mode-var--root-uri nil)
-(defvar lsp-org-mode-var--initialization-options nil)
-(defvar lsp-org-mode-var--capabilities nil)
-(defvar lsp-org-mode-var--trace nil)
-(defvar lsp-org-mode-var--workspace-folders nil)
 
 (provide 'lsp-org-mode-var)
 ;;; lsp-org-mode-var.el ends here
