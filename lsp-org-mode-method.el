@@ -138,6 +138,11 @@
         ( :label "test2"
           :kind 1)))))
 
+(defun lsp-org-mode-method--completionItem/resolve (params)
+  "Method `completionItem/resolve` with PARAMS."
+  `( :result
+     ,params))
+
 (defvar lsp-org-mode-method--plist
   (list
    ;; Lifecycle Messages
@@ -155,7 +160,8 @@
 
    ;; Language Features
    "textDocument/semanticTokens/full" 'lsp-org-mode-method--textDocument/semanticTokens/full
-   "textDocument/completion" 'lsp-org-mode-method--textDocument/completion))
+   "textDocument/completion" 'lsp-org-mode-method--textDocument/completion
+   "completionItem/resolve" 'lsp-org-mode-method--completionItem/resolve))
 
 (provide 'lsp-org-mode-method)
 ;;; lsp-org-mode-method.el ends here
