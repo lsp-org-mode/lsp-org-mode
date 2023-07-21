@@ -98,9 +98,7 @@
              (text (plist-get change :text)))
         (with-current-buffer buf
           (save-excursion
-            (goto-char (point-min))
-            (forward-line range-start-line)
-            (forward-char range-start-character)
+            (lsp-org-mode-subr--move-line-col range-start-line range-start-character)
             (delete-char range-length)
             (insert text)))))
     (message
@@ -135,7 +133,7 @@
     `( :result
        ,(mapcar
          (lambda (elm)
-           `( :startLine ,(nth 1 elm) :endLine ,(nth 2 elm)))
+           `( :startLine ,(1- (nth 1 elm)) :endLine ,(1- (nth 2 elm))))
          trees))))
 
 (defun lsp-org-mode-method--textDocument/semanticTokens/full (params)

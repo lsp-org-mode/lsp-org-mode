@@ -152,7 +152,7 @@
           (when face-list
             (push (list
                    face-list
-                   (- (line-number-at-pos) 1)
+                   (line-number-at-pos)
                    (current-column)
                    (- next-change (point)))
                   res))
@@ -162,7 +162,7 @@
 (defun lsp-org-mode-subr--encode-tokens (tokens)
   "Encode TOKENS."
   (let (res prev)
-    (setq prev '(nil 0 0 0))
+    (setq prev '(nil 1 0 0))
     (dolist (cur tokens)
       (push (list
              (nth 0 cur)
@@ -185,11 +185,11 @@
           (org-next-visible-heading 1)
           (push (list
                  (org-current-level)
-                 (- (line-number-at-pos) 1)
+                 (line-number-at-pos)
                  (save-excursion         ; see `org-cycle-internal-local'
 		           (org-end-of-subtree t t)
 		           (unless (eobp) (forward-char -1))
-		           (- (line-number-at-pos) 1)))
+		           (line-number-at-pos)))
                 res))))
     (pop res)                            ; remove last garbage element
     (nreverse res)))
@@ -204,15 +204,15 @@
   "Get line and col from PNT."
   (save-excursion
     (goto-char pnt)
-    (list (- (line-number-at-pos) 1)
+    (list (line-number-at-pos)
           (current-column))))
 
 (defun lsp-org-mode-subr--encode-range (start end)
   "Encode START and END."
   (let ((e-start (lsp-org-mode-subr--point-to-line-col start))
         (e-end (lsp-org-mode-subr--point-to-line-col end)))
-    `( :start (:line ,(nth 0 e-start) :character ,(nth 1 e-start))
-       :end (:line ,(nth 0 e-end) :character ,(nth 1 e-end)))))
+    `( :start (:line ,(1- (nth 0 e-start)) :character ,(nth 1 e-start))
+       :end (:line ,(1- (nth 0 e-end)) :character ,(nth 1 e-end)))))
 
 (provide 'lsp-org-mode-subr)
 ;;; lsp-org-mode-subr.el ends here
