@@ -1,0 +1,9 @@
+* lsp-org-mode
+
+lsp server for org-mode using Emacs!
+
+* Usage
+
+** vscode-org-mode
+
+See [[https://github.com/lsp-org-mode/vscode-org-mode][vscode-org-mode]] for more information.
